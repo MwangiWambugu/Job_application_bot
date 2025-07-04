@@ -1,5 +1,7 @@
 # AutoApply AI - Freelance Job Application Tool
 
+[AutoApply AI](https://curious-sfogliatella-3e9c6b.netlify.app/)
+
 An AI-powered application that automatically finds, matches, and applies to freelance opportunities across multiple platforms including Upwork, LinkedIn, and Indeed.
 
 ## Features
