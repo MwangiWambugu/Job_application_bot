@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BotIcon, TrendingUpIcon, TargetIcon, SettingsIcon, FileTextIcon, SearchIcon, KeyIcon } from 'lucide-react';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
@@ -7,25 +7,65 @@ import JobMatching from './components/JobMatching';
 import Settings from './components/Settings';
 import APIConfiguration from './components/APIConfiguration';
 import Landing from './components/Landing';
+import AuthPage from './components/AuthPage';
+import { useAuth } from './hooks/useAuth';
 
 function App() {
-  const [currentView, setCurrentView] = useState('landing');
-  const [user, setUser] = useState<any>(null);
+  const [currentView, setCurrentView] = useState('dashboard');
+  const [showLanding, setShowLanding] = useState(false);
+  const { user, loading, signOut } = useAuth();
 
-  const handleLogin = () => {
-    setUser({ name: 'John Doe', email: 'john@example.com' });
+  // Show landing page for non-authenticated users who haven't seen it
+  useEffect(() => {
+    if (!user && !loading) {
+      const hasSeenLanding = localStorage.getItem('hasSeenLanding');
+      if (!hasSeenLanding) {
+        setShowLanding(true);
+      }
+    }
+  }, [user, loading]);
+
+  const handleLandingLogin = () => {
+    localStorage.setItem('hasSeenLanding', 'true');
+    setShowLanding(false);
+  };
+
+  const handleAuthSuccess = () => {
     setCurrentView('dashboard');
   };
 
-  const handleLogout = () => {
-    setUser(null);
-    setCurrentView('landing');
+  const handleLogout = async () => {
+    await signOut();
+    setCurrentView('dashboard');
+    setShowLanding(false);
+    localStorage.removeItem('hasSeenLanding');
   };
 
-  if (!user) {
-    return <Landing onLogin={handleLogin} />;
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-blue-500 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <BotIcon className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-slate-600">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
+  // Show landing page for first-time visitors
+  if (!user && showLanding) {
+    return <Landing onLogin={handleLandingLogin} />;
+  }
+
+  // Show auth page for non-authenticated users
+  if (!user) {
+    return <AuthPage onSuccess={handleAuthSuccess} />;
+  }
+
+  // Main application for authenticated users
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       <Header user={user} onLogout={handleLogout} />
