@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { BotIcon, TrendingUpIcon, TargetIcon, SettingsIcon, FileTextIcon, SearchIcon } from 'lucide-react';
+import { BotIcon, TrendingUpIcon, TargetIcon, SettingsIcon, FileTextIcon, SearchIcon, KeyIcon } from 'lucide-react';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
 import ResumeUpload from './components/ResumeUpload';
 import JobMatching from './components/JobMatching';
 import Settings from './components/Settings';
+import APIConfiguration from './components/APIConfiguration';
 import Landing from './components/Landing';
 
 function App() {
@@ -68,6 +69,18 @@ function App() {
               <SearchIcon className="w-5 h-5 mr-3" />
               Job Matching
             </button>
+
+            <button
+              onClick={() => setCurrentView('api')}
+              className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 ${
+                currentView === 'api' 
+                  ? 'bg-blue-500 text-white shadow-lg' 
+                  : 'hover:bg-blue-50 text-slate-600 hover:text-blue-600'
+              }`}
+            >
+              <KeyIcon className="w-5 h-5 mr-3" />
+              API Setup
+            </button>
             
             <button
               onClick={() => setCurrentView('settings')}
@@ -88,6 +101,7 @@ function App() {
           {currentView === 'dashboard' && <Dashboard />}
           {currentView === 'resume' && <ResumeUpload />}
           {currentView === 'jobs' && <JobMatching />}
+          {currentView === 'api' && <APIConfiguration />}
           {currentView === 'settings' && <Settings />}
         </div>
       </div>
